@@ -26,6 +26,9 @@ class InsertSort:
         self.lt = less_than
 
     def sort(self):
+        if len(self.array) <= 1:
+            return self.array
+
         for i in range(1, len(self.array)):
             current = self.array[i]
             j = i

@@ -5,10 +5,12 @@ import random
 class MergeSort:
 
     def __init__(self, iterable, less_than=lambda x, y: x < y):
-        self.array = iterable
+        self.array = [x for x in iterable]
         self.lt = less_than
 
     def sort(self):
+        if len(self.array) <= 1:
+            return self.array
         return self._sort(self.array)
 
     def _sort(self, arr):
