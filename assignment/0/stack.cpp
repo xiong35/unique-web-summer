@@ -42,16 +42,11 @@ public:
      *  Return poped value if the operation is successful. 
      *  return false if the operation fails
      * */
-    bool pop()
+    TYPE pop()
     {
-        if (isEmpty())
+        if (!isEmpty())
         {
-            return false;
-        }
-        else
-        {
-            top--;
-            return stack[top + 1];
+            return stack[top--];
         }
     }
 
@@ -94,8 +89,10 @@ int main()
     int n;
     TYPE temp;
 
+    cout << "enter the size of the stack: ";
     cin >> n;
 
+    cout << "enter the items: ";
     for (int i = 0; i < n; i++)
     {
         cin >> temp;
@@ -112,3 +109,4 @@ int main()
 
     return 0;
 }
+Z
