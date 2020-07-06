@@ -77,22 +77,24 @@ void myQS(void *arr, int num, int size, bool (*compare)(void *pa, void *pb))
 
 bool less_than(void *pa, void *pb)
 {
-    return *((int *)pa) < *((int *)pb);
+    return *((int *)pa) <= *((int *)pb);
 }
 
 int main(void)
 {
-    int array[7];
-    for (int i = 0; i < 7; i++)
+	const NUMBER = 17;
+
+    int array[NUMBER];
+    for (int i = 0; i < NUMBER; i++)
     {
         array[i] = (i * 77) % 13;
         printf("%d ", array[i]);
     }
 
-    myQS((void *)array, 7, sizeof(int), less_than);
+    myQS((void *)array, NUMBER, sizeof(int), less_than);
 
     printf("\n");
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < NUMBER; i++)
     {
         printf("%d ", array[i]);
     }
