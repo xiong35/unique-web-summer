@@ -1,3 +1,7 @@
-* {
-  color: yellow;
+p {
+  margin: 60px;
+}
+
+.d-flex {
+  display: flex;
 }
