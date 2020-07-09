@@ -73,6 +73,7 @@ p {
   justify-content: space-between;
   font-size: 1.1rem;
   font-weight: 900;
+  cursor: pointer;
 }
 
 .carousel-footer-link button {
