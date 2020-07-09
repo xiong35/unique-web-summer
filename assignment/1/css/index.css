@@ -18,8 +18,9 @@ p {
   background-color: black;
   padding: 1.6rem;
   font-weight: 700;
-  font-size: 1..7rem;
+  font-size: 1.1rem;
   justify-content: space-between;
+  margin-top: 7rem;
 }
 
 .footer span {
@@ -35,4 +36,77 @@ p {
     margin: 2.3rem 0.3rem 2.3rem 0.3rem;
     display: inline-block;
   }
+}
+
+.main-content section:not(:first-of-type) {
+  max-width: 1420px;
+  padding: 0 1.4rem 0 1.4rem;
+}
+
+.carousel {
+  margin-top: 60px;
+}
+
+.carousel-holder {
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+}
+
+.carousel-scroller {
+  width: 300%;
+}
+
+.carousel-scroller a {
+  display: inline;
+  width: 33.33%;
+}
+
+.carousel-scroller img {
+  width: 100%;
+}
+
+.carousel-footer-link {
+  width: 100%;
+  color: white;
+  background-color: black;
+  justify-content: space-between;
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+.carousel-footer-link button {
+  color: black;
+  height: 100%;
+  background-color: rgb(252, 175, 23);
+  padding: 0.9rem 1rem 1rem 1rem;
+}
+
+.carousel-footer-link span {
+  height: 100%;
+  align-self: center;
+  margin: 0.6rem 0.5rem 0.9rem 2rem;
+}
+
+.carousel-dots {
+  justify-content: center;
+  align-items: center;
+  padding-top: 0.8rem;
+}
+
+.carousel-dots button {
+  background-color: #000;
+  height: 9.5px;
+  width: 9.5px;
+  padding: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.carousel-dots button:not(last-child) {
+  margin-right: 0.8rem;
+}
+
+button.carousel-dot-active {
+  background-color: rgb(252, 175, 23);
 }
