@@ -22,6 +22,8 @@ function $(query, all = false) {
       $(".carousel-footer-link").href =
         carouselScroller.children[ind].href;
 
+      carouselScroller.children[ind].classList.add("activated");
+
       carouselDots.forEach((btn) => {
         btn.classList.remove("carousel-dot-active");
       });
@@ -30,4 +32,5 @@ function $(query, all = false) {
       carouselScroller.style.marginLeft = -ind * 100 + "%";
     };
   });
+  carouselDots[0].click();
 })();
