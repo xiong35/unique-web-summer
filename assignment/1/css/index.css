@@ -5,3 +5,30 @@ p {
 .d-flex {
   display: flex;
 }
+
+.body {
+  width: 100%;
+  display: block;
+  min-height: 100vh;
+}
+
+.footer {
+  width: 100%;
+  color: white;
+  background-color: black;
+  padding: 1.6rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  justify-content: space-between;
+}
+
+.footer span {
+  margin: 0 0.3rem 0 0.3rem;
+}
+
+@media (max-width: 767.5px) {
+  .footer {
+    color: red;
+    flex-direction: column;
+  }
+}
