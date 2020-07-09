@@ -55,6 +55,7 @@ p {
 
 .carousel-scroller {
   width: 300%;
+  transition: all 0.3s;
 }
 
 .carousel-scroller a {
@@ -64,6 +65,14 @@ p {
 
 .carousel-scroller img {
   width: 100%;
+}
+
+.carousel-scroller img:nth-child(2) {
+  margin-top: -100%;
+}
+
+.carousel-scroller img:nth-child(3) {
+  margin-top: -200%;
 }
 
 .carousel-footer-link {
@@ -96,6 +105,7 @@ p {
 }
 
 .carousel-dots button {
+  transition: all 0.3s;
   background-color: #000;
   height: 9.5px;
   width: 9.5px;
@@ -109,5 +119,6 @@ p {
 }
 
 button.carousel-dot-active {
+  transition: all 0.3s;
   background-color: rgb(252, 175, 23);
 }
