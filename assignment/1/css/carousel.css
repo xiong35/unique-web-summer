@@ -14,7 +14,7 @@
 }
 
 .carousel-scroller a {
-  display: inline;
+  /* display: inline; */
   position: relative;
   width: 33.33%;
 }
@@ -60,19 +60,19 @@
   font-size: 1.1rem;
   font-weight: 900;
   cursor: pointer;
+  margin-top: -2px;
+  text-transform: uppercase;
 }
 
 .carousel-footer-link button {
   color: black;
   height: 100%;
   background-color: rgb(252, 175, 23);
-  padding: 0.9rem 1rem 1rem 1rem;
+  padding: 0.9rem 1rem 0.9rem 1rem;
 }
 
 .carousel-footer-link span {
-  height: 100%;
-  align-self: center;
-  margin: 0.6rem 0.5rem 0.9rem 2rem;
+  margin: 0.8rem 0.5rem 0.9rem 2rem;
 }
 
 .carousel-dots {

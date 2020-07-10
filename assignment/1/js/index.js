@@ -1,3 +1,4 @@
+// simulate jQuery
 function $(query, all = false) {
   if (all) {
     return document.querySelectorAll(query);
@@ -5,11 +6,11 @@ function $(query, all = false) {
   return document.querySelector(query);
 }
 
+// axios
 const instance = axios.create({
   baseURL: "http://127.0.0.1:7777/rstar/",
   timeout: 5000,
 });
-
 instance.interceptors.response.use(
   (response) => {
     const data = response.data;
@@ -20,13 +21,11 @@ instance.interceptors.response.use(
     throw err;
   }
 );
-
 function getPosts(page) {
   return instance({
     url: `posts?page=${page || 1}`,
   });
 }
-
 function getGames(page) {
   return instance({
     url: "games",
@@ -41,6 +40,7 @@ getGames().then((Games) => {
   console.log(Games);
 });
 
+// handler for carousel
 (function () {
   const carouselDots = $(".carousel-dots button", true);
   const carouseInfo = [
@@ -70,3 +70,6 @@ getGames().then((Games) => {
   });
   carouselDots[0].click();
 })();
+
+
+// render posts

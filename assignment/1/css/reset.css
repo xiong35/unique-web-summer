@@ -46,7 +46,7 @@ table {
 
 @font-face {
   font-family: gta;
-  src: url(../public/font.ttf);
+  src: url("../public/font.ttf");
 }
 
 html {
