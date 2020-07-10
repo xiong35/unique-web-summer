@@ -1,5 +1,61 @@
-p {
-  margin: 60px;
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+  box-sizing: border-box;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+@font-face {
+  font-family: gta;
+  src: url("../public/font.ttf");
+}
+
+html {
+  font-family: gta;
+}
+
+a {
+  color: #000;
+  text-decoration: none;
 }
 
 .d-flex {
@@ -193,4 +249,184 @@ p {
 
 .viewmore:hover::before {
   height: calc(1rem + 4px);
+}
+
+.carousel {
+  margin-top: 60px;
+}
+
+.carousel-holder {
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+}
+
+.carousel-scroller {
+  width: 300%;
+  transition: all 0.3s;
+}
+
+.carousel-scroller a {
+  /* display: inline; */
+  position: relative;
+  width: 33.33%;
+}
+
+.carousel-scroller img {
+  width: 100%;
+}
+
+.carousel-scroller img:not(:first-child) {
+  position: absolute;
+  opacity: 0;
+  left: 0;
+  top: 0;
+}
+
+.carousel-scroller a.activated img:nth-of-type(2) {
+  opacity: 1;
+  transition: opacity 0.8s;
+  transition-delay: 0.8s;
+}
+
+.carousel-scroller a.activated img:nth-of-type(3) {
+  opacity: 1;
+  transition: all 0.8s;
+  transition-delay: 1.6s;
+  animation: falldown 1s linear 1.6s 1;
+}
+
+@keyframes falldown {
+  from {
+    transform: translateY(30px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.carousel-footer-link {
+  width: 100%;
+  color: white;
+  background-color: black;
+  justify-content: space-between;
+  font-size: 1.1rem;
+  font-weight: 900;
+  cursor: pointer;
+  margin-top: -2px;
+  text-transform: uppercase;
+}
+
+.carousel-footer-link button {
+  color: black;
+  height: 100%;
+  background-color: rgb(252, 175, 23);
+  padding: 0.9rem 1rem 0.9rem 1rem;
+}
+
+.carousel-footer-link span {
+  margin: 0.8rem 0.5rem 0.9rem 2rem;
+}
+
+.carousel-dots {
+  justify-content: center;
+  align-items: center;
+  padding-top: 0.8rem;
+}
+
+.carousel-dots button {
+  transition: all 0.3s;
+  background-color: #000;
+  height: 9.5px;
+  width: 9.5px;
+  padding: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.carousel-dots button:not(last-child) {
+  margin-right: 0.8rem;
+}
+
+button.carousel-dot-active {
+  transition: all 0.3s;
+  background-color: rgb(252, 175, 23);
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  height: 60px;
+  display: grid;
+  z-index: 7;
+}
+
+.nav-background {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0.5)
+    ),
+    url(../img/homePage/26iy.jpg);
+  background-repeat: repeat-x;
+  background-size: auto 100%;
+  z-index: -1;
+  animation: roll 7s linear infinite forwards;
+}
+
+@keyframes roll {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 1024px 0;
+  }
+}
+
+.nav-item-container {
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 40px 12px 24px;
+}
+
+.nav-item-container > div {
+  cursor: pointer;
+}
+
+.nav-mid img {
+  width: 37px;
+  height: 34px;
+  border: 1px solid black;
+  border-radius: 7px;
+}
+
+.nav-left {
+  align-items: center;
+}
+
+.nav-left div {
+  height: 0;
+  width: 1.5rem;
+  border: 2px solid rgb(252, 175, 23);
+  margin: 4px 0 4px 0;
+}
+
+.nav-login {
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  background-color: #ffffff26;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav-right i {
+  color: #fff;
+  font-size: 20px;
 }
