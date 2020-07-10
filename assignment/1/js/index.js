@@ -32,14 +32,6 @@ function getGames(page) {
   });
 }
 
-getPosts().then((posts) => {
-  console.log(posts);
-});
-
-getGames().then((Games) => {
-  console.log(Games);
-});
-
 // handler for carousel
 (function () {
   const carouselDots = $(".carousel-dots button", true);
@@ -72,25 +64,78 @@ getGames().then((Games) => {
 })();
 
 // render posts
-// lazy loading
 (function () {
-  const imgs = $(".card-container img.lazy", true);
-  console.log(imgs);
+  const newsContainer = $(".newswire .card-container");
+  getPosts()
+    .then((res) => {
+      const posts = res.data.posts.slice(0, 6);
 
-  function lazyLoad(imgs) {
-    const scrollTop = document.documentElement.scrollTop;
-    const clientHeight = document.documentElement.clientHeight;
+      const postsHTML = posts.map((it, ind) => {
+        const imgUrl = ind
+          ? it.preview_images_parsed["newswire-block-square"].src
+          : it.preview_images_parsed["newswire-block-16x9"].src;
 
-    imgs.forEach((it) => {
-      if (!it.classList.contains("lazy")) {
-        return;
-      }
-      if (it.offsetTop - scrollTop - clientHeight < 0) {
-        it.src = it.dataset.src;
-        it.classList.remove("lazy");
-      }
+        let flex;
+        switch (ind) {
+          case 0:
+            flex = 12;
+            break;
+          case 1:
+          case 2:
+            flex = 6;
+            break;
+          default:
+            flex = 4;
+        }
+
+        return `
+          <a href="${it.link}" class="card flex-${flex}">
+            <img
+              data-src="${imgUrl}"
+              alt="${it.title}"
+              class="lazy"
+            />
+              <div class="card-info">
+                <h1>${it.title}"</h1>
+                <div class="card-subtitle">
+                  <i class="fa fa-star"></i>${it.primary_tags[0].name}
+                </div>
+                <span class="card-date">${it.created_formatted}</span>
+              </div>
+          </a>`;
+      });
+
+      newsContainer.innerHTML = postsHTML.join("");
+    })
+    .catch((err) => {
+      console.log(err);
+      newsContainer.innerHTML = "<h1>something went wrong</h1>";
+    })
+    .then(() => {
+      load();
+    })
+    .then(() => {
+      lazyLoad($(".card-container img.lazy", true));
     });
-  }
+})();
+
+function lazyLoad(imgs) {
+  const scrollTop = document.documentElement.scrollTop;
+  const clientHeight = document.documentElement.clientHeight;
+
+  imgs.forEach((it) => {
+    if (!it.classList.contains("lazy")) {
+      return;
+    }
+    if (it.offsetTop - scrollTop - clientHeight < 0) {
+      it.src = it.dataset.src;
+      it.classList.remove("lazy");
+    }
+  });
+}
+// lazy loading
+function load() {
+  const imgs = $(".card-container img.lazy", true);
 
   var timmer;
   window.onscroll = function () {
@@ -102,4 +147,4 @@ getGames().then((Games) => {
     }, 1000);
     lazyLoad(imgs);
   };
-})();
+}
