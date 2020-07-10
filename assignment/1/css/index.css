@@ -24,8 +24,8 @@ p {
 }
 
 .loading {
-  background-color: #000;
-  color: #000;
+  background-color: #000 !important;
+  color: #000 !important;
 }
 
 .footer span {
@@ -93,14 +93,15 @@ p {
 
 .card img {
   width: 100%;
-  background-color: #ddd;
+  min-height: 200px;
+  background-color: #eee;
 }
 
 .lazy {
   max-width: 100%;
   height: 0;
   padding-bottom: 75%;
-  background-color: #ddd;
+  background-color: #eee;
 }
 
 .card:hover h1 {

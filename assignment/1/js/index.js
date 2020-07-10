@@ -114,7 +114,7 @@ async function renderPosts() {
             <span class="card-date">${
               it.created_formatted
             }</span>
-          </div>
+          </div> 
       </a>`;
   });
 
@@ -159,7 +159,7 @@ async function renderGames() {
 
   lazyLoad($(".card-container img.lazy", true));
 
-  $(".main-content").classList.remove("loading");
+  $(".body").classList.remove("loading");
   $(".nav-background").style.animationPlayState = "paused";
 })();
 
