@@ -67,10 +67,11 @@
 }
 
 .card {
+  width: 100%;
   margin: 0.8rem 0 0.8rem 0;
   border: 1px solid #00000026;
   box-shadow: 3px 3px 6px 0 #00000033;
-  transition: color 0.3s;
+  transition: all 0.3s;
 }
 
 .fix-1-1 {
@@ -93,11 +94,30 @@
   background-color: #eee;
 }
 
-.lazy {
+.lazy img {
   max-width: 100%;
   height: 0;
   padding-bottom: 75%;
-  background-color: #eee;
+}
+
+.lazy {
+  opacity: 0 !important;
+}
+
+.float-up {
+  opacity: 1;
+  transition: all 0.4s;
+  transition-delay: 0.4s;
+  animation: float 0.8s linear;
+}
+
+@keyframes float {
+  from {
+    transform: translateY(-30px);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 .card:hover h1 {

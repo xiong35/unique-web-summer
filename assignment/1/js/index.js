@@ -33,23 +33,32 @@ function getGames(page) {
 }
 
 // lazy loading
-function lazyLoad(imgs) {
+function lazyLoad(imgs, cards) {
   const scrollTop = document.documentElement.scrollTop;
   const clientHeight = document.documentElement.clientHeight;
 
-  imgs.forEach((it) => {
+  cards.forEach((it) => {
     if (!it.classList.contains("lazy")) {
+      return;
+    }
+    if (it.offsetTop - scrollTop - clientHeight < 10) {
+      it.classList.replace("lazy", "float-up");
+    }
+  });
+  imgs.forEach((it) => {
+    if (!it.dataset.src) {
       return;
     }
     if (it.offsetTop - scrollTop - clientHeight < 150) {
       it.src = it.dataset.src;
-      it.classList.remove("lazy");
+      it.dataset.src = "";
     }
   });
+
 }
 function load() {
-  const imgs = $(".card-container img.lazy", true);
-
+  const imgs = $(".card-container img", true);
+  const cards = $(".lazy", true);
   var timmer;
   window.onscroll = () => {
     if (timmer) {
@@ -57,8 +66,8 @@ function load() {
     }
     timmer = setTimeout(() => {
       timmer = null;
-    }, 100);
-    lazyLoad(imgs);
+    }, 70);
+    lazyLoad(imgs, cards);
   };
 }
 
@@ -77,7 +86,7 @@ async function renderPosts() {
   }
   const posts = res.data.posts.slice(0, 6);
 
-  const postsHTML = posts.map((it, ind) => {
+  posts.forEach((it, ind) => {
     const imgUrl = ind
       ? it.preview_images_parsed["newswire-block-square"].src
       : it.preview_images_parsed["newswire-block-16x9"].src;
@@ -94,14 +103,14 @@ async function renderPosts() {
       default:
         flex = 4;
     }
-
-    return `
-      <a href="${it.link}" class="card flex-${flex}">
+    const node = document.createElement("a");
+    node.href = it.link;
+    node.className = `card flex-${flex} lazy`;
+    node.innerHTML = `
       <div class="${ind ? "fix-1-1" : ""}">
         <img
         data-src="${imgUrl}"
         alt="${it.title}"
-        class="lazy"
         />
       </div>
           <div class="card-info">
@@ -113,11 +122,9 @@ async function renderPosts() {
             <span class="card-date">${
               it.created_formatted
             }</span>
-          </div> 
-      </a>`;
+      </div>`;
+    newsContainer.appendChild(node);
   });
-
-  newsContainer.innerHTML = postsHTML.join("");
 }
 
 async function renderGames() {
@@ -134,29 +141,31 @@ async function renderGames() {
     gameContainer.innerHTML = "<h1>something went wrong</h1>";
   }
   const games = res.data.games.slice(0, 4);
-  console.log(games);
 
-  const gameHTML = games.map((it, ind) => {
-    return `
-    <a href="${it.link}" class="card flex-3">
+  games.forEach((it, ind) => {
+    const node = document.createElement("a");
+    node.href = it.link;
+    node.className = "card flex-3 lazy";
+    node.innerHTML = `
       <img
         data-src="https://www.rockstargames.com/${it.fob_640}"
         alt="${it.title}"
         class="lazy"
-        />
-        </a> `;
+      />`;
+    gameContainer.appendChild(node);
   });
-
-  gameContainer.innerHTML = gameHTML.join("");
 }
 
 (async function () {
   await renderPosts();
   await renderGames();
 
+  lazyLoad(
+    $(".card-container img", true),
+    $(".lazy", true)
+  );
   load();
 
-  lazyLoad($(".card-container img.lazy", true));
 
   $(".body").classList.remove("loading");
   $(".nav-background").style.animationPlayState = "paused";
