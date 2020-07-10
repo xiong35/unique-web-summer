@@ -32,6 +32,36 @@ function getGames(page) {
   });
 }
 
+// lazy loading
+function lazyLoad(imgs) {
+  const scrollTop = document.documentElement.scrollTop;
+  const clientHeight = document.documentElement.clientHeight;
+
+  imgs.forEach((it) => {
+    if (!it.classList.contains("lazy")) {
+      return;
+    }
+    if (it.offsetTop - scrollTop - clientHeight < 0) {
+      it.src = it.dataset.src;
+      it.classList.remove("lazy");
+    }
+  });
+}
+function load() {
+  const imgs = $(".card-container img.lazy", true);
+
+  var timmer;
+  window.onscroll = function () {
+    if (timmer) {
+      return;
+    }
+    timmer = setTimeout(() => {
+      timmer = null;
+    }, 1000);
+    lazyLoad(imgs);
+  };
+}
+
 // handler for carousel
 (function () {
   const carouselDots = $(".carousel-dots button", true);
@@ -64,87 +94,56 @@ function getGames(page) {
 })();
 
 // render posts
-(function () {
+(async function () {
   const newsContainer = $(".newswire .card-container");
-  getPosts()
-    .then((res) => {
-      const posts = res.data.posts.slice(0, 6);
 
-      const postsHTML = posts.map((it, ind) => {
-        const imgUrl = ind
-          ? it.preview_images_parsed["newswire-block-square"].src
-          : it.preview_images_parsed["newswire-block-16x9"].src;
+  let res;
+  try {
+    res = await getPosts();
+  } catch (err) {
+    console.log(err);
+    newsContainer.innerHTML = "<h1>something went wrong</h1>";
+  }
+  const posts = res.data.posts.slice(0, 6);
 
-        let flex;
-        switch (ind) {
-          case 0:
-            flex = 12;
-            break;
-          case 1:
-          case 2:
-            flex = 6;
-            break;
-          default:
-            flex = 4;
-        }
+  const postsHTML = posts.map((it, ind) => {
+    const imgUrl = ind
+      ? it.preview_images_parsed["newswire-block-square"].src
+      : it.preview_images_parsed["newswire-block-16x9"].src;
 
-        return `
-          <a href="${it.link}" class="card flex-${flex}">
-            <img
-              data-src="${imgUrl}"
-              alt="${it.title}"
-              class="lazy"
-            />
-              <div class="card-info">
-                <h1>${it.title}"</h1>
-                <div class="card-subtitle">
-                  <i class="fa fa-star"></i>${it.primary_tags[0].name}
-                </div>
-                <span class="card-date">${it.created_formatted}</span>
-              </div>
-          </a>`;
-      });
-
-      newsContainer.innerHTML = postsHTML.join("");
-    })
-    .catch((err) => {
-      console.log(err);
-      newsContainer.innerHTML = "<h1>something went wrong</h1>";
-    })
-    .then(() => {
-      load();
-    })
-    .then(() => {
-      lazyLoad($(".card-container img.lazy", true));
-    });
-})();
-
-function lazyLoad(imgs) {
-  const scrollTop = document.documentElement.scrollTop;
-  const clientHeight = document.documentElement.clientHeight;
-
-  imgs.forEach((it) => {
-    if (!it.classList.contains("lazy")) {
-      return;
+    let flex;
+    switch (ind) {
+      case 0:
+        flex = 12;
+        break;
+      case 1:
+      case 2:
+        flex = 6;
+        break;
+      default:
+        flex = 4;
     }
-    if (it.offsetTop - scrollTop - clientHeight < 0) {
-      it.src = it.dataset.src;
-      it.classList.remove("lazy");
-    }
+
+    return `
+      <a href="${it.link}" class="card flex-${flex}">
+        <img
+          data-src="${imgUrl}"
+          alt="${it.title}"
+          class="lazy"
+        />
+          <div class="card-info">
+            <h1>${it.title}"</h1>
+            <div class="card-subtitle">
+              <i class="fa fa-star"></i>${it.primary_tags[0].name}
+            </div>
+            <span class="card-date">${it.created_formatted}</span>
+          </div>
+      </a>`;
   });
-}
-// lazy loading
-function load() {
-  const imgs = $(".card-container img.lazy", true);
 
-  var timmer;
-  window.onscroll = function () {
-    if (timmer) {
-      return;
-    }
-    timmer = setTimeout(() => {
-      timmer = null;
-    }, 1000);
-    lazyLoad(imgs);
-  };
-}
+  newsContainer.innerHTML = postsHTML.join("");
+
+  load();
+
+  lazyLoad($(".card-container img.lazy", true));
+})();
