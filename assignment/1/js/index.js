@@ -54,7 +54,6 @@ function lazyLoad(imgs, cards) {
       it.dataset.src = "";
     }
   });
-
 }
 function load() {
   const imgs = $(".card-container img", true);
@@ -114,7 +113,7 @@ async function renderPosts() {
         />
       </div>
           <div class="card-info">
-            <h1>${it.title}"</h1>
+            <h1>${it.title}</h1>
             <div class="card-subtitle">
               <i class="fa fa-star"></i>${
                 it.primary_tags[0].name
@@ -160,12 +159,8 @@ async function renderGames() {
   await renderPosts();
   await renderGames();
 
-  lazyLoad(
-    $(".card-container img", true),
-    $(".lazy", true)
-  );
+  lazyLoad($(".card-container img", true), $(".lazy", true));
   load();
-
 
   $(".body").classList.remove("loading");
   $(".nav-background").style.animationPlayState = "paused";
