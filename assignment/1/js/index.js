@@ -8,7 +8,7 @@ function $(query, all = false) {
 
 // axios
 const instance = axios.create({
-  baseURL: "http://127.0.0.1:7777/rstar/",
+  baseURL: "http://xiong35.cn:7770/rstar/",
   timeout: 5000,
 });
 instance.interceptors.response.use(
@@ -109,8 +109,7 @@ async function renderPosts() {
             <div class="card-subtitle">
               <i class="fa fa-star"></i>${
                 it.primary_tags[0].name
-              }
-            </div>
+              }</div>
             <span class="card-date">${
               it.created_formatted
             }</span>
