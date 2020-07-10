@@ -167,7 +167,17 @@ a {
   opacity: 1;
   transition: all 0.5s;
   transition-delay: 0.3s;
+  -webkit-animation: float 0.8s linear;
   animation: float 0.8s linear;
+}
+
+@-webkit-keyframes float {
+  from {
+    transform: translateY(30px);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 @keyframes float {
@@ -312,7 +322,17 @@ a {
   opacity: 1;
   transition: all 0.8s;
   transition-delay: 1.6s;
+  -webkit-animation: falldown 1s linear 1.6s 1;
   animation: falldown 1s linear 1.6s 1;
+}
+
+@-webkit-keyframes falldown {
+  from {
+    transform: translateY(30px);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 @keyframes falldown {
@@ -396,7 +416,17 @@ button.carousel-dot-active {
   background-repeat: repeat-x;
   background-size: auto 100%;
   z-index: -1;
+  -webkit-animation: roll 7s linear infinite forwards;
   animation: roll 7s linear infinite forwards;
+}
+
+@-webkit-keyframes roll {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 1024px 0;
+  }
 }
 
 @keyframes roll {
