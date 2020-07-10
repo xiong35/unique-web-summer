@@ -74,6 +74,15 @@ p {
 
 .card img {
   width: 100%;
+  background-color: #ddd;
+  min-height: 250px;
+}
+
+.lazy {
+  max-width: 100%;
+  height: 0;
+  padding-bottom: 75%;
+  background-color: #ddd;
 }
 
 .card:hover h1 {

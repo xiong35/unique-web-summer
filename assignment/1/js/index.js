@@ -71,5 +71,35 @@ getGames().then((Games) => {
   carouselDots[0].click();
 })();
 
-
 // render posts
+// lazy loading
+(function () {
+  const imgs = $(".card-container img.lazy", true);
+  console.log(imgs);
+
+  function lazyLoad(imgs) {
+    const scrollTop = document.documentElement.scrollTop;
+    const clientHeight = document.documentElement.clientHeight;
+
+    imgs.forEach((it) => {
+      if (!it.classList.contains("lazy")) {
+        return;
+      }
+      if (it.offsetTop - scrollTop - clientHeight < 0) {
+        it.src = it.dataset.src;
+        it.classList.remove("lazy");
+      }
+    });
+  }
+
+  var timmer;
+  window.onscroll = function () {
+    if (timmer) {
+      return;
+    }
+    timmer = setTimeout(() => {
+      timmer = null;
+    }, 1000);
+    lazyLoad(imgs);
+  };
+})();
