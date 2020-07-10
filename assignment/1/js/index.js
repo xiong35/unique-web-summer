@@ -57,7 +57,7 @@ function load() {
     }
     timmer = setTimeout(() => {
       timmer = null;
-    }, 200);
+    }, 100);
     lazyLoad(imgs);
   };
 }
@@ -158,6 +158,9 @@ async function renderGames() {
   load();
 
   lazyLoad($(".card-container img.lazy", true));
+
+  $(".main-content").classList.remove("loading");
+  $(".nav-background").style.animationPlayState = "paused";
 })();
 
 // handler for carousel

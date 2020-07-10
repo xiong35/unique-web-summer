@@ -23,6 +23,11 @@ p {
   margin-top: 7rem;
 }
 
+.loading {
+  background-color: #000;
+  color: #000;
+}
+
 .footer span {
   margin: 0 0.3rem 0 0.3rem;
 }
