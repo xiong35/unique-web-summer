@@ -171,24 +171,6 @@ a {
   animation: float 0.8s linear;
 }
 
-@-webkit-keyframes float {
-  from {
-    transform: translateY(30px);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-
-@keyframes float {
-  from {
-    transform: translateY(30px);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-
 .card:hover h1 {
   color: rgb(252, 175, 23);
 }
@@ -323,10 +305,10 @@ a {
   transition: all 0.8s;
   transition-delay: 1.6s;
   -webkit-animation: falldown 1s linear 1.6s 1;
-  animation: falldown 1s linear 1.6s 1;
+  animation: float 1s linear 1.6s 1;
 }
 
-@-webkit-keyframes falldown {
+@-webkit-keyframes float {
   from {
     transform: translateY(30px);
   }
@@ -335,7 +317,7 @@ a {
   }
 }
 
-@keyframes falldown {
+@keyframes float {
   from {
     transform: translateY(30px);
   }
