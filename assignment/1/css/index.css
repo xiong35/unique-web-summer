@@ -359,6 +359,7 @@ a {
 .carousel-footer-link button {
   color: black;
   height: 100%;
+  cursor: pointer;
   background-color: rgb(252, 175, 23);
   padding: 0.9rem 1rem 0.9rem 1rem;
 }
