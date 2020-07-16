@@ -40,17 +40,23 @@ class MyPromise {
     /*then 方法可以被同一个 promise 调用多次
         当 promise 成功执行时，所有 onFulfilled 需按照其注册顺序依次回调
         当 promise 被拒绝执行时，所有的 onRejected 需按照其注册顺序依次回调 */
-    return new MyPromise((resolve, reject) => {
-      this._handle({
-        // 如果then没有传东西, 即
-        // 如果 onFulfilled 不是函数且 promise1 成功执行/被拒绝
-        // promise2 必须成功/拒绝执行并返回相同的值/据因
-        onFulfilled: onFulfilled || null,
-        onRejected: onRejected || null,
-        resolve,
-        reject,
+    const pro = new MyPromise((resolve, reject) => {
+      setTimeout(() => {
+        this._handle(
+          {
+            // 如果then没有传东西, 即
+            // 如果 onFulfilled 不是函数且 promise1 成功执行/被拒绝
+            // promise2 必须成功/拒绝执行并返回相同的值/据因
+            onFulfilled: onFulfilled || null,
+            onRejected: onRejected || null,
+            resolve,
+            reject,
+          },
+          pro
+        );
       });
     });
+    return pro;
   }
 
   catch(onError) {
@@ -69,7 +75,7 @@ class MyPromise {
     );
   }
 
-  _handle(callbackObj) {
+  _handle(callbackObj, pro) {
     if (this.state === "pending") {
       this.callbackObjs.push(callbackObj);
       return;
@@ -103,6 +109,10 @@ class MyPromise {
       ret = err;
       decition = callbackObj.reject;
     } finally {
+      if (ret === pro) {
+        callbackObj.reject(new TypeError("Chaining cycle"));
+        return;
+      }
       // 这里的resolve实际上是 promise2 的 _resolve
       // 通过这样的调用来改变/通知 promise2
       // 让上一个promise确定下来
@@ -205,6 +215,7 @@ class MyPromise {
       return new MyPromise((resolve) => resolve());
     }
   }
+
   static reject(value) {
     if (
       value &&
@@ -219,6 +230,7 @@ class MyPromise {
       return new Promise((_, reject) => reject(value));
     }
   }
+
   static all(promises) {
     return new MyPromise((resolve, reject) => {
       let fulfilledCount = 0;
@@ -255,27 +267,6 @@ class MyPromise {
   }
 }
 
-// new MyPromise((resolve) => {
-//   setTimeout(() => {
-//     console.log("promis1");
-//     resolve("5秒");
-//   }, 1000);
-// })
-//   .then((result) => {
-//     //对result进行第一层加工
-//     let exResult = "前缀:" + result;
-//     return new MyPromise((resolve) => {
-//       setTimeout(() => {
-//         console.log("promise2");
-//         resolve(exResult);
-//       }, 1000);
-//     });
-//   })
-//   .then((exResult) => {
-//     console.log("promise3", exResult);
-//   });
-
-//demo reject
 new MyPromise((resolve, reject) => {
   console.log("begin pro1");
   setTimeout(() => {
@@ -307,3 +298,12 @@ new MyPromise((resolve, reject) => {
   .finally(() => {
     console.log("onDone");
   });
+
+exports.deferred = () => {
+  let dfd = {};
+  dfd.promise = new MyPromise((resolve, reject) => {
+    dfd.resolve = resolve;
+    dfd.reject = reject;
+  });
+  return dfd;
+};
