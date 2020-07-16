@@ -33,6 +33,7 @@ class MyPromise {
       把绑定好的 _resolve 函数赋值给 fn 的参数 resolve
       异步操作结束后就会调用这个类里的 _resolve 回调, 触发所有then函数
     */
+
     fn(this._resolve.bind(this), this._reject.bind(this));
   }
 
@@ -132,6 +133,8 @@ class MyPromise {
   */
 
   _resolve(value) {
+    if (this.state !== "pending") return;
+
     /* 
     如果 value 为对象或者函数：
 
@@ -174,11 +177,14 @@ class MyPromise {
     this.state = "fulfilled"; //改变状态
     this.value = value; //保存结果
     this.callbackObjs.forEach((callbackObj) =>
-      this._handle(callbackObj)
+      setTimeout(() => {
+        this._handle(callbackObj);
+      })
     );
   }
 
   _reject(error) {
+    if (this.state !== "pending") return;
     if (typeof error === "object" || typeof error === "function") {
       let then = error.then;
       if (typeof then === "function") {
@@ -193,7 +199,9 @@ class MyPromise {
     this.state = "rejected";
     this.value = error;
     this.callbackObjs.forEach((callbackObj) =>
-      this._handle(callbackObj)
+      setTimeout(() => {
+        this._handle(callbackObj);
+      })
     );
   }
 
