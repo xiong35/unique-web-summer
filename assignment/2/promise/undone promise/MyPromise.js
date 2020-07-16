@@ -41,21 +41,19 @@ class MyPromise {
     /*then 方法可以被同一个 promise 调用多次
         当 promise 成功执行时，所有 onFulfilled 需按照其注册顺序依次回调
         当 promise 被拒绝执行时，所有的 onRejected 需按照其注册顺序依次回调 */
-    const pro = new MyPromise((resolve, reject) => {
-      setTimeout(() => {
-        this._handle(
-          {
-            // 如果then没有传东西, 即
-            // 如果 onFulfilled 不是函数且 promise1 成功执行/被拒绝
-            // promise2 必须成功/拒绝执行并返回相同的值/据因
-            onFulfilled: onFulfilled || null,
-            onRejected: onRejected || null,
-            resolve,
-            reject,
-          },
-          pro
-        );
-      });
+    var pro = new MyPromise((resolve, reject) => {
+      this._handle(
+        {
+          // 如果then没有传东西, 即
+          // 如果 onFulfilled 不是函数且 promise1 成功执行/被拒绝
+          // promise2 必须成功/拒绝执行并返回相同的值/据因
+          onFulfilled: onFulfilled || null,
+          onRejected: onRejected || null,
+          resolve,
+          reject,
+        },
+        pro
+      );
     });
     return pro;
   }
@@ -85,7 +83,7 @@ class MyPromise {
       this.state === "fulfilled"
         ? callbackObj.onFulfilled
         : callbackObj.onRejected;
-    let decition =
+    let decision =
       this.state === "fulfilled"
         ? callbackObj.resolve
         : callbackObj.reject;
@@ -97,33 +95,32 @@ class MyPromise {
       // 不论 promise1 被 reject 还是被 resolve 时 promise2 都会被 resolve
       // 只有出现异常时才会被 rejected。
 
-      decition(this.value);
+      decision(this.value);
       return;
     }
     // 把promise fulfill了的值传给下一个promise
     // 并且激活下一个primise, 获得他的返回值(可能是一个新的promise)
     let ret;
-
-    try {
-      ret = callback(this.value);
-    } catch (err) {
-      ret = err;
-      decition = callbackObj.reject;
-    } finally {
-      if (ret === pro) {
-        callbackObj.reject(new TypeError("Chaining cycle"));
-        return;
+    setTimeout(() => {
+      try {
+        ret = callback(this.value);
+        if (ret === pro) {
+          callbackObj.reject(new TypeError("Chaining cycle"));
+          return;
+        }
+      } catch (err) {
+        // 这里的resolve实际上是 promise2 的 _resolve
+        // 通过这样的调用来改变/通知 promise2
+        // 让上一个promise确定下来
+        // 如果给了一个promise, 就将现在的_resolve当作promise的resolve
+        // -然后激活这个promise的then
+        // -所以下一个promise自己和then都被激活了
+        // 且下一个promise的onFulfill==
+        // 相当于重新起了一个promise
+        callbackObj.reject(err);
       }
-      // 这里的resolve实际上是 promise2 的 _resolve
-      // 通过这样的调用来改变/通知 promise2
-      // 让上一个promise确定下来
-      // 如果给了一个promise, 就将现在的_resolve当作promise的resolve
-      // -然后激活这个promise的then
-      // -所以下一个promise自己和then都被激活了
-      // 且下一个promise的onFulfill==
-      // 相当于重新起了一个promise
-      decition(ret);
-    }
+      decision(ret);
+    });
   }
 
   /* 
@@ -151,8 +148,13 @@ class MyPromise {
         否则以 e 为据因拒绝 promise
       如果 then 不是函数，以 value 为参数执行 promise
     */
-    if (typeof value === "object" || typeof value === "function") {
-      let then = value.then;
+    if (
+      (value && typeof value === "object") ||
+      typeof value === "function"
+    ) {
+      try {
+        let then = value.then;
+      } catch (error) {}
       if (typeof then === "function") {
         /* 
         如果是 Promise 实例(有 then 方法)
@@ -177,15 +179,16 @@ class MyPromise {
     this.state = "fulfilled"; //改变状态
     this.value = value; //保存结果
     this.callbackObjs.forEach((callbackObj) =>
-      setTimeout(() => {
-        this._handle(callbackObj);
-      })
+      this._handle(callbackObj, this)
     );
   }
 
   _reject(error) {
     if (this.state !== "pending") return;
-    if (typeof error === "object" || typeof error === "function") {
+    if (
+      error &&
+      (typeof error === "object" || typeof error === "function")
+    ) {
       let then = error.then;
       if (typeof then === "function") {
         then.call(
@@ -199,9 +202,7 @@ class MyPromise {
     this.state = "rejected";
     this.value = error;
     this.callbackObjs.forEach((callbackObj) =>
-      setTimeout(() => {
-        this._handle(callbackObj);
-      })
+      this._handle(callbackObj, this)
     );
   }
 
@@ -276,11 +277,13 @@ class MyPromise {
 }
 
 new MyPromise((resolve, reject) => {
-  console.log("begin pro1");
-  setTimeout(() => {
-    reject("pro1 reject");
-  }, 1000);
+  resolve(000);
 })
+  .then((result) => {
+    console.log(result);
+    throw null;
+  })
+
   .then(
     (result) => {
       console.log("result in pro2's resolve:", result);
@@ -290,22 +293,39 @@ new MyPromise((resolve, reject) => {
       console.log("error in pro2's reject:", error);
       return "error msg from pro2";
     }
-  )
-  .catch((err) => {
-    console.log("catch:", err);
-    return MyPromise.resolve("catch msg");
-  })
-  .then((result) => {
-    return new MyPromise((resolve) => {
-      setTimeout(() => {
-        console.log("result in pro3's resolve:", result);
-        resolve("msg from pro3");
-      }, 1000);
-    });
-  })
-  .finally(() => {
-    console.log("onDone");
-  });
+  );
+
+// new MyPromise((resolve, reject) => {
+//   console.log("begin pro1");
+//   setTimeout(() => {
+//     reject("pro1 reject");
+//   }, 1000);
+// })
+//   .then(
+//     (result) => {
+//       console.log("result in pro2's resolve:", result);
+//       return result;
+//     },
+//     (error) => {
+//       console.log("error in pro2's reject:", error);
+//       return "error msg from pro2";
+//     }
+//   )
+//   .catch((err) => {
+//     console.log("catch:", err);
+//     return MyPromise.resolve("catch msg");
+//   })
+//   .then((result) => {
+//     return new MyPromise((resolve) => {
+//       setTimeout(() => {
+//         console.log("result in pro3's resolve:", result);
+//         resolve("msg from pro3");
+//       }, 1000);
+//     });
+//   })
+//   .finally(() => {
+//     console.log("onDone");
+//   });
 
 exports.deferred = () => {
   let dfd = {};
