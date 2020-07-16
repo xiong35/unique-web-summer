@@ -11,12 +11,6 @@ const propPatchTypes = {
 };
 
 class VDom {
-  vdom = {};
-
-  constructor(vDom) {
-    this.vDom = vDom;
-  }
-
   createElement = (vdom) => {
     if (typeof vdom === "string" || typeof vdom === "number") {
       return document.createTextNode(vdom);
@@ -26,8 +20,8 @@ class VDom {
 
     const element = document.createElement(tag);
 
-    for (let key in props) {
-      element.setAttribute(key, props[key]);
+    for (let propName in props) {
+      element.setAttribute(propName, props[propName]);
     }
 
     if (children) {
@@ -74,9 +68,9 @@ class VDom {
     const patches = [];
     const allProps = { ...vDomOld.props, ...vDomNew.props };
 
-    for (let key in allProps) {
-      const oldVal = vDomOld.props[key];
-      const newVal = vDomNew.props[key];
+    for (let propName in allProps) {
+      const oldVal = vDomOld.props[propName];
+      const newVal = vDomNew.props[propName];
 
       // del
       if (!newVal) {
@@ -88,7 +82,7 @@ class VDom {
       else if (!oldVal || oldVal !== newVal) {
         patches.push({
           type: propPatchTypes.UPDATE,
-          key,
+          propName,
           value: newVal,
         });
       }
@@ -159,11 +153,11 @@ class VDom {
     props.forEach((obj) => {
       // del
       if (obj.type === propPatchTypes.REMOVE) {
-        element.removeAttribute(patchObj.key);
+        element.removeAttribute(patchObj.propName);
       }
       // create / update
       else if (obj.type === propPatchTypes.UPDATE) {
-        element.setAttribute(obj.key, obj.value);
+        element.setAttribute(obj.propName, obj.value);
       }
     });
   };
