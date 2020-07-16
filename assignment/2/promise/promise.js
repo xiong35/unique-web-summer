@@ -9,7 +9,7 @@ class MyPromise {
 
   constructor(fn) {
     try {
-      fn(this._resolve.bind(this), this._reject.bind(this));
+      fn(this._resolve, this._reject);
     } catch (err) {
       reject(err);
     }
