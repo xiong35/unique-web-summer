@@ -15,22 +15,22 @@ class MyPromise {
     }
   }
 
-  _resolve(value) {
+  _resolve = (value) => {
     if (this.status === PENDING) {
       this.status = FULFILLED;
       this.value = value;
       this.onDecided.forEach((obj) => obj.onFulfilled());
     }
-  }
-  _reject(reason) {
+  };
+  _reject = (reason) => {
     if (this.status === PENDING) {
       this.status = REJECTED;
       this.value = reason;
       this.onDecided.forEach((obj) => obj.onRejected());
     }
-  }
+  };
 
-  then(onFulfilled, onRejected) {
+  then = (onFulfilled, onRejected) => {
     onFulfilled =
       typeof onFulfilled === "function"
         ? onFulfilled
@@ -81,13 +81,13 @@ class MyPromise {
       }
     });
     return pro2;
-  }
+  };
 
-  catch(onError) {
+  catch = (onError) => {
     return this.then(null, onError);
-  }
+  };
 
-  finally(onDone) {
+  finally = (onDone) => {
     if (typeof onDone !== "function") return this.then();
     return this.then(
       (value) => MyPromise.resolve(onDone()).then(() => value),
@@ -96,7 +96,7 @@ class MyPromise {
           throw reason;
         })
     );
-  }
+  };
 
   static resolve(value) {
     if (value && value instanceof MyPromise) {
