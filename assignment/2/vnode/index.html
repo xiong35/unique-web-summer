@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Document</title>
+    <script src="./vDom.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+  <script>
+    let el = document.getElementById("app");
+    let v = new VDom();
+    v.render(el);
+  </script>
+</html>
