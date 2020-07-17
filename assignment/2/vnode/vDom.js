@@ -32,6 +32,14 @@ class VDom {
     return element;
   };
 
+  static toVDom = (tag, props, ...children) => {
+    return {
+      tag,
+      props: props || {},
+      children: [].concat.apply([], children) || [],
+    };
+  };
+
   diff = (vDomOld, vDomNew) => {
     // add
     if (!vDomOld) {
@@ -192,27 +200,14 @@ function getDom(i) {
       children: [(j + "").repeat(9)],
     });
   }
-  var dom = {
-    tag: "div",
-    props: { class: "container" },
-    children: [
-      {
-        tag: "button",
-        props: { class: "btn" },
-        children: ["click"],
-      },
-      {
-        tag: "ul",
-        props: {},
-        children: c,
-      },
-      // [1, 2, 3].map((el) => {
-      //   return {
-      //     tag: "span",
-      //     props: { class: el + "" },
-      //   };
-      // }),
-    ],
-  };
+
+  var dom = VDom.toVDom(
+    "div",
+    { class: "container" },
+    VDom.toVDom("button", { class: "btn" }, "click"),
+    [1, 2, 3].map((j) => {
+      return VDom.toVDom("ul", null, c);
+    })
+  );
   return dom;
 }
