@@ -4,7 +4,6 @@ const nodePatchTypes = {
   REPLACE: "replace node",
   UPDATE: "update node",
   INSERT: "insert node",
-  MOVE: "move node",
 };
 
 const propPatchTypes = {
@@ -43,6 +42,7 @@ class VDom {
   };
 
   diff = (vDomOld, vDomNew) => {
+    debugger;
     // add
     if (!vDomOld) {
       return {
@@ -185,7 +185,7 @@ class VDom {
       } else {
         // 尝试找到没有 key 的相同元素, 找到就复用, 找不到就插入
         oldObj = nodesWithoutKey.find((obj, ind) => {
-          if (obj && sameVnode(obj.vDom, newChild)) {
+          if (obj && sameVnodeType(obj.vDom, newChild)) {
             nodesWithoutKey[ind] = undefined;
             return true;
           }
@@ -250,20 +250,17 @@ class VDom {
 
     // insert
     if (patchObj.insert) {
-      console.log("insert");
       let atNode = parent.childNodes[patchObj.at];
       parent.insertBefore(patchObj.rDom, atNode);
     }
 
     // create
     else if (patchObj.type === nodePatchTypes.CREATE) {
-      // console.log("parent", parent);
       return parent.appendChild(this.createElement(patchObj.vDom));
     }
 
     const siblings = parent.childNodes;
     const element = siblings[index];
-    // console.log(element);
 
     // delete
     if (patchObj.type === nodePatchTypes.REMOVE) {
@@ -298,15 +295,13 @@ class VDom {
             toRemove.push(siblings[obj.from]);
           }
         });
-        console.log("siblings", siblings);
-        console.log("moves", moves);
-        console.log("toRemove", toRemove);
 
-        toRemove.forEach((el) => el.parentNode.removeChild(el));
+        toRemove.forEach((el) => {
+          if (el) el.parentNode.removeChild(el);
+        });
       }
 
       children.forEach((obj, ind) => {
-        // console.log(element);
         this.patch(element, obj, ind);
       });
     }
@@ -344,14 +339,13 @@ class VDom {
       newDom = getDom(++i);
       const patch = this.diff(preDom, newDom);
       preDom = newDom;
-      // console.log("newDom", newDom);
-      // console.log("patch", patch);
+
       this.patch(parent, patch);
     }, 1000);
   };
 }
 
-function sameVnode(a, b) {
+function sameVnodeType(a, b) {
   let aType = typeof a;
   let bType = typeof b;
   if (aType === "undefined" || bType === "undefined") {
@@ -361,7 +355,7 @@ function sameVnode(a, b) {
     (aType === "string" || aType === "number") &&
     (bType === "string" || bType === "number")
   ) {
-    return a == b;
+    return true;
   }
   return a.key === b.key && a.tag === b.tag;
 }
@@ -402,20 +396,32 @@ let keyed = [
 });
 
 function getDom(i) {
-  let ind = Math.floor(Math.random() * keyed.length);
-  let cind = Math.floor(Math.random() * c.length);
-  c.unshift(keyed.splice(ind, 1)[0]);
-  console.log(cind);
-  c[cind].children = [(i + "").repeat(i)];
+  // let ind = Math.floor(Math.random() * keyed.length);
+  // let cind = Math.floor(Math.random() * c.length);
+  // c.splice(cind, 0, keyed.splice(ind, 1)[0]);
 
-  // var dom = VDom.toVDom(
-  //   "div",
-  //   { class: "container" },
-  //   VDom.toVDom("button", { class: "btn" }, "click"),
-  //   [1, 2, 3].map((j) => {
-  //     return VDom.toVDom("ul", null, c);
-  //   })
-  // );
-  var dom = VDom.toVDom("ul", null, c);
+  // try {
+  //   c[cind + 2].children = ["@".repeat(i)];
+  // } catch (error) {}
+  // var dom = VDom.toVDom("ul", null, c);
+
+  let c = [];
+  for (let j = 0; j < i; j++) {
+    c.unshift({
+      tag: "li",
+      props: { class: "li-item" },
+      children: [(j + "").repeat(i)],
+    });
+  }
+
+  var dom = VDom.toVDom(
+    "div",
+    { class: "container" },
+    VDom.toVDom("button", { class: "btn" }, "click"),
+    [1, 2, 3].map((j) => {
+      return VDom.toVDom("ul", null, c);
+    })
+  );
+  console.log(dom);
   return dom;
 }
