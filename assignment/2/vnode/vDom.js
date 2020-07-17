@@ -42,7 +42,7 @@ class VDom {
   };
 
   diff = (vDomOld, vDomNew) => {
-    debugger;
+    // debugger;
     // add
     if (!vDomOld) {
       return {
@@ -73,7 +73,7 @@ class VDom {
     // update child
     if (vDomOld.tag) {
       const propsDiff = this._diffProps(vDomOld, vDomNew);
-      const { children, moves } = this.diffChildren(
+      const { children, moves } = this._diffChildren(
         vDomOld,
         vDomNew
       );
@@ -119,23 +119,6 @@ class VDom {
   };
 
   _diffChildren = (vDomOld, vDomNew) => {
-    const patches = [];
-
-    const childLength = Math.max(
-      vDomOld.children.length,
-      vDomNew.children.length
-    );
-
-    for (let i = 0; i < childLength; i++) {
-      patches.push(
-        this.diff(vDomOld.children[i], vDomNew.children[i])
-      );
-    }
-
-    return patches;
-  };
-
-  diffChildren = (vDomOld, vDomNew) => {
     const patches = new Array(vDomNew.children.length);
     const moves = new Array(vDomOld.children.length);
     /* 
@@ -337,6 +320,7 @@ class VDom {
       }
       newDom = getDom(++i);
       const patch = this.diff(preDom, newDom);
+      console.log(patch);
       preDom = JSON.parse(JSON.stringify(newDom));
 
       this.patch(parent, patch);
@@ -406,7 +390,7 @@ function getDom(i) {
 
   try {
     childrenWithKey[cind + 2].children = ["@".repeat(i)];
-  } catch (error) {}
+  } catch (error) { }
 
   childrenWithKey = JSON.parse(JSON.stringify(childrenWithKey));
 
@@ -428,7 +412,7 @@ function getDom(i) {
     })
   );
 
-  var dom = VDom.toVDom("ul", null, childrenWithKey, dom2);
+  var dom = VDom.toVDom("ul", null, dom2);
 
   return dom;
 }

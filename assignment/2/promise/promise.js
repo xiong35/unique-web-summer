@@ -11,7 +11,7 @@ class MyPromise {
     try {
       fn(this._resolve, this._reject);
     } catch (err) {
-      reject(err);
+      this._reject(err);
     }
   }
 
