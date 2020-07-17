@@ -185,7 +185,7 @@ class VDom {
       } else {
         // 尝试找到没有 key 的相同元素, 找到就复用, 找不到就插入
         oldObj = nodesWithoutKey.find((obj, ind) => {
-          if (obj && sameVnodeType(obj.vDom, newChild)) {
+          if (obj && this._sameVnodeType(obj.vDom, newChild)) {
             nodesWithoutKey[ind] = undefined;
             return true;
           }
@@ -239,12 +239,11 @@ class VDom {
       }
     }
 
-    // 删除多余元素
     return { children: patches, moves };
   };
 
   patch = (parent, patchObj, index = 0) => {
-    if (!patchObj) {
+    if (!patchObj || !parent) {
       return;
     }
 
@@ -333,95 +332,103 @@ class VDom {
     parent.appendChild(el);
 
     let timeout = setInterval(() => {
-      if (i > 20) {
+      if (i > 15) {
         clearInterval(timeout);
       }
       newDom = getDom(++i);
       const patch = this.diff(preDom, newDom);
-      preDom = newDom;
+      preDom = JSON.parse(JSON.stringify(newDom));
 
       this.patch(parent, patch);
     }, 1000);
   };
+
+  _sameVnodeType(a, b) {
+    let aType = typeof a;
+    let bType = typeof b;
+    if (aType === "undefined" || bType === "undefined") {
+      return false;
+    }
+    if (
+      (aType === "string" || aType === "number") &&
+      (bType === "string" || bType === "number")
+    ) {
+      return true;
+    }
+    return a.key === b.key && a.tag === b.tag;
+  }
 }
 
-function sameVnodeType(a, b) {
-  let aType = typeof a;
-  let bType = typeof b;
-  if (aType === "undefined" || bType === "undefined") {
-    return false;
-  }
-  if (
-    (aType === "string" || aType === "number") &&
-    (bType === "string" || bType === "number")
-  ) {
-    return true;
-  }
-  return a.key === b.key && a.tag === b.tag;
-}
-
-var c = [];
+var childrenWithKey = [];
 let keyed = [
-  "aa",
-  "bb",
-  "cc",
-  "dd",
-  "ee",
-  "ff",
-  "gg",
-  "hh",
-  "ii",
-  "jj",
-  "kk",
-  "ll",
-  "aaamm",
-  "aaann",
-  "aaadd",
-  "aaaee",
-  "aaaff",
-  "aaagg",
-  "aaahh",
-  "aaaii",
-  "aaajj",
-  "aaakk",
-  "aaall",
-  "aaamm",
-  "aaann",
-].map((key, ind) => {
+  "Lorem",
+  "ipsum",
+  "dolor",
+  "sit",
+  "amet,",
+  "consectetur",
+  "adipisicing",
+  "elit.",
+  "Eos,",
+  "qui,",
+  "quidem",
+  "natus",
+  "beatae",
+  "at,",
+  "aut",
+  "voluptatem",
+  "velit",
+  "deserunt",
+  "doloremque",
+  "aspernatur",
+  "suscipit",
+  "quam!",
+  "Blanditiis",
+  "velit",
+  "repellendus",
+  "vel",
+  "totam,",
+  "delectus",
+  "molestiae",
+  "odio?",
+].map((key) => {
   return {
     tag: "li",
     props: { key },
-    children: [key.repeat(3)],
+    children: [key],
   };
 });
 
 function getDom(i) {
-  // let ind = Math.floor(Math.random() * keyed.length);
-  // let cind = Math.floor(Math.random() * c.length);
-  // c.splice(cind, 0, keyed.splice(ind, 1)[0]);
+  let ind = Math.floor(Math.random() * keyed.length);
+  let cind = Math.floor(Math.random() * childrenWithKey.length);
+  childrenWithKey.splice(cind, 0, keyed.splice(ind, 1)[0]);
 
-  // try {
-  //   c[cind + 2].children = ["@".repeat(i)];
-  // } catch (error) {}
-  // var dom = VDom.toVDom("ul", null, c);
+  try {
+    childrenWithKey[cind + 2].children = ["@".repeat(i)];
+  } catch (error) {}
 
-  let c = [];
+  childrenWithKey = JSON.parse(JSON.stringify(childrenWithKey));
+
+  let childrenWithOutKey = [];
   for (let j = 0; j < i; j++) {
-    c.unshift({
+    childrenWithOutKey.unshift({
       tag: "li",
       props: { class: "li-item" },
       children: [(j + "").repeat(i)],
     });
   }
 
-  var dom = VDom.toVDom(
+  var dom2 = VDom.toVDom(
     "div",
     { class: "container" },
     VDom.toVDom("button", { class: "btn" }, "click"),
-    [1, 2, 3].map((j) => {
-      return VDom.toVDom("ul", null, c);
+    [1, 2].map((j) => {
+      return VDom.toVDom("ul", null, childrenWithOutKey);
     })
   );
-  console.log(dom);
+
+  var dom = VDom.toVDom("ul", null, childrenWithKey, dom2);
+
   return dom;
 }
