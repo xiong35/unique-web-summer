@@ -11,12 +11,12 @@ const propPatchTypes = {
 };
 
 class VDom {
-  createElement = (vdom) => {
-    if (typeof vdom === "string" || typeof vdom === "number") {
-      return document.createTextNode(vdom);
+  createElement = (vDom) => {
+    if (typeof vDom === "string" || typeof vDom === "number") {
+      return document.createTextNode(vDom);
     }
 
-    const { tag, props, children } = vdom;
+    const { tag, props, children } = vDom;
 
     const element = document.createElement(tag);
 
@@ -55,6 +55,20 @@ class VDom {
     }
 
     // replace
+    if (
+      typeof vDomOld !== typeof vDomNew ||
+      ((typeof vDomOld === "string" ||
+        typeof vDomOld === "number") &&
+        vDomOld !== vDomNew) ||
+      vDomOld.tag !== vDomNew.tag
+    ) {
+      return {
+        type: nodePatchTypes.REPLACE,
+        vDom: vDomNew,
+      };
+    }
+
+    // update child
     if (vDomOld.tag) {
       const propsDiff = this._diffProps(vDomOld, vDomNew);
       const childrenDiff = this._diffChildren(vDomOld, vDomNew);
@@ -101,13 +115,6 @@ class VDom {
   _diffChildren = (vDomOld, vDomNew) => {
     const patches = [];
 
-    if (vDomOld.children === undefined) {
-      vDomOld.children = [];
-    }
-    if (vDomNew.children === undefined) {
-      vDomNew.children = [];
-    }
-
     const childLength = Math.max(
       vDomOld.children.length,
       vDomNew.children.length
@@ -141,7 +148,7 @@ class VDom {
     }
 
     // update
-    if (patchObj.type === nodePatchTypes.UPDATE) {
+    else if (patchObj.type === nodePatchTypes.UPDATE) {
       const { props, children } = patchObj;
 
       this._patchProps(element, props);
@@ -150,6 +157,14 @@ class VDom {
         // console.log(element);
         this.patch(element, obj, ind);
       });
+    }
+
+    // replace
+    else if (patchObj.type === nodePatchTypes.REPLACE) {
+      return parent.replaceChild(
+        this.createElement(patchObj.vDom),
+        element
+      );
     }
   };
 
@@ -179,12 +194,13 @@ class VDom {
     parent.appendChild(el);
 
     let timeout = setInterval(() => {
-      if (i > 10) {
+      if (i > 9) {
         clearInterval(timeout);
       }
       newDom = getDom(++i);
       const patch = this.diff(preDom, newDom);
       preDom = newDom;
+      console.log(newDom);
       console.log(patch);
       this.patch(parent, patch);
     }, 1000);
@@ -194,10 +210,10 @@ class VDom {
 function getDom(i) {
   let c = [];
   for (let j = 0; j < i; j++) {
-    c.push({
+    c.unshift({
       tag: "li",
       props: { class: "li-item" },
-      children: [(j + "").repeat(9)],
+      children: [(j + "").repeat(i)],
     });
   }
 
