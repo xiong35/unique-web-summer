@@ -136,8 +136,8 @@ class VDom {
   };
 
   diffChildren = (vDomOld, vDomNew) => {
-    const patches = new Array(vDomNew.length);
-    const moves = new Array(vDomOld.length);
+    const patches = new Array(vDomNew.children.length);
+    const moves = new Array(vDomOld.children.length);
     /* 
     node obj:
     {
@@ -164,12 +164,12 @@ class VDom {
       if (props !== undefined && props.key !== undefined) {
         nodesWithKey[props.key] = {
           oldInd: ind,
-          oldChild: child,
+          vDom: child,
         };
       } else {
         nodesWithoutKey[noKeyInd++] = {
           oldInd: ind,
-          oldChild: child,
+          vDom: child,
         };
       }
     });
@@ -196,9 +196,9 @@ class VDom {
         // 如果对应的 key 没有旧元素可复用
         // 就在新元素的位置创建并 插入 元素
         patches[newInd] = {
-          type: nodePatchTypes.INSERT,
+          insert: true,
+          rDom: this.createElement(newChild),
           at: newInd,
-          vDom: newChild,
         };
       } else {
         if (oldObj.oldInd < lastIndex) {
@@ -210,7 +210,7 @@ class VDom {
           moves[oldObj.oldInd] = {
             type: nodePatchTypes.INSERT,
             from: oldObj.oldInd,
-            to: newInd,
+            at: newInd,
           };
         }
         lastIndex = Math.max(oldObj.oldInd, lastIndex);
@@ -225,6 +225,7 @@ class VDom {
       if (oldObj) {
         moves[oldObj.oldInd] = {
           type: nodePatchTypes.REMOVE,
+          from: oldObj.oldInd,
         };
       }
     }
@@ -233,6 +234,7 @@ class VDom {
       if (oldObj) {
         moves[oldObj.oldInd] = {
           type: nodePatchTypes.REMOVE,
+          from: oldObj.oldInd,
         };
       }
     }
@@ -249,7 +251,8 @@ class VDom {
     // insert
     if (patchObj.insert) {
       console.log("insert");
-      parent.appendChild(patchObj.rDom);
+      let atNode = parent.childNodes[patchObj.at];
+      parent.insertBefore(patchObj.rDom, atNode);
     }
 
     // create
@@ -290,12 +293,16 @@ class VDom {
 
               children[obj.to].rDom = siblings[obj.from];
               children[obj.to].insert = true;
+              children[obj.to].at = obj.at;
             }
             toRemove.push(siblings[obj.from]);
           }
         });
+        console.log("siblings", siblings);
+        console.log("moves", moves);
+        console.log("toRemove", toRemove);
 
-        toRemove.forEach((el) => el.parent.removeChild(el));
+        toRemove.forEach((el) => el.parentNode.removeChild(el));
       }
 
       children.forEach((obj, ind) => {
@@ -331,14 +338,14 @@ class VDom {
     parent.appendChild(el);
 
     let timeout = setInterval(() => {
-      if (i > 8) {
+      if (i > 20) {
         clearInterval(timeout);
       }
       newDom = getDom(++i);
       const patch = this.diff(preDom, newDom);
       preDom = newDom;
-      console.log("newDom", newDom);
-      console.log("patch", patch);
+      // console.log("newDom", newDom);
+      // console.log("patch", patch);
       this.patch(parent, patch);
     }, 1000);
   };
@@ -359,23 +366,56 @@ function sameVnode(a, b) {
   return a.key === b.key && a.tag === b.tag;
 }
 
-function getDom(i) {
-  let c = [];
-  for (let j = 0; j < i; j++) {
-    c.unshift({
-      tag: "li",
-      props: { class: "li-item" },
-      children: [(j + "").repeat(i)],
-    });
-  }
+var c = [];
+let keyed = [
+  "aa",
+  "bb",
+  "cc",
+  "dd",
+  "ee",
+  "ff",
+  "gg",
+  "hh",
+  "ii",
+  "jj",
+  "kk",
+  "ll",
+  "aaamm",
+  "aaann",
+  "aaadd",
+  "aaaee",
+  "aaaff",
+  "aaagg",
+  "aaahh",
+  "aaaii",
+  "aaajj",
+  "aaakk",
+  "aaall",
+  "aaamm",
+  "aaann",
+].map((key, ind) => {
+  return {
+    tag: "li",
+    props: { key },
+    children: [key.repeat(3)],
+  };
+});
 
-  var dom = VDom.toVDom(
-    "div",
-    { class: "container" },
-    VDom.toVDom("button", { class: "btn" }, "click"),
-    [1, 2, 3].map((j) => {
-      return VDom.toVDom("ul", null, c);
-    })
-  );
+function getDom(i) {
+  let ind = Math.floor(Math.random() * keyed.length);
+  let cind = Math.floor(Math.random() * c.length);
+  c.unshift(keyed.splice(ind, 1)[0]);
+  console.log(cind);
+  c[cind].children = [(i + "").repeat(i)];
+
+  // var dom = VDom.toVDom(
+  //   "div",
+  //   { class: "container" },
+  //   VDom.toVDom("button", { class: "btn" }, "click"),
+  //   [1, 2, 3].map((j) => {
+  //     return VDom.toVDom("ul", null, c);
+  //   })
+  // );
+  var dom = VDom.toVDom("ul", null, c);
   return dom;
 }
