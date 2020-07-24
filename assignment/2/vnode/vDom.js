@@ -324,7 +324,7 @@ class VDom {
       preDom = JSON.parse(JSON.stringify(newDom));
 
       this.patch(parent, patch);
-    }, 1000);
+    }, 2000);
   };
 
   _sameVnodeType(a, b) {
@@ -403,16 +403,10 @@ function getDom(i) {
     });
   }
 
-  var dom2 = VDom.toVDom(
-    "div",
-    { class: "container" },
-    VDom.toVDom("button", { class: "btn" }, "click"),
+  var dom = VDom.toVDom("ul", null, childrenWithKey,
     [1, 2].map((j) => {
       return VDom.toVDom("ul", null, childrenWithOutKey);
-    })
-  );
-
-  var dom = VDom.toVDom("ul", null, dom2);
+    }));
 
   return dom;
 }
