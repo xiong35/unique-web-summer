@@ -30,7 +30,9 @@
         }
       }
 
-      var store = createStore(counter);
+      var myRedux = new MyRedux();
+
+      var store = myRedux.createStore(counter);
       var valueEl = document.getElementById("value");
 
       function render() {
